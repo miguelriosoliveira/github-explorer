@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, useEffect } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 
 import logo from '../../assets/logo.svg';
@@ -18,7 +18,17 @@ interface Repository {
 const Dashboard: React.FC = () => {
 	const [search, setSearch] = useState('');
 	const [searchError, setSearchError] = useState('');
-	const [repositories, setRepositories] = useState<Repository[]>([]);
+	const [repositories, setRepositories] = useState<Repository[]>(() => {
+		const storedRepositories = localStorage.getItem('@github-explorer:repositories');
+		if (storedRepositories) {
+			return JSON.parse(storedRepositories);
+		}
+		return [];
+	});
+
+	useEffect(() => {
+		localStorage.setItem('@github-explorer:repositories', JSON.stringify(repositories));
+	}, [repositories]);
 
 	async function addRepository(e: FormEvent<HTMLFormElement>) {
 		e.preventDefault();
